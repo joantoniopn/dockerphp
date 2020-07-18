@@ -1,2 +1,2 @@
 # dockerphp
-    php:7.2-fpm, Mssql, nginx
+    php:7.4-fpm, Mssql, nginx
