@@ -1,0 +1,48 @@
+version: '3'
+services:
+
+    #servico php
+    php-treinaweb:
+        build: 
+            context: .
+            dockerfile: php-fpm/Dockerfile
+        container_name: php-treinaweb
+        volumes:           
+            - ./code:/var/www/code
+
+            - ./php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
+        networks:
+            - app-treinaweb
+
+    #servico nginx
+    infra-nginx:
+        image: nginx:alpine
+        container_name: nginx-treinaweb
+        volumes:
+            - ./code:/var/www/code
+            - ./nginx/code.conf:/etc/nginx/conf.d/code.conf
+
+            - ./docker-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+        ports:
+            - "80:80"
+            - "443:443"
+            # Xdebug
+            - "9001:9001"
+        networks:
+            - app-treinaweb
+
+    #banco de dados sqlserver
+    bd-mssql:
+        image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
+        environment:
+            SA_PASSWORD: "senha_teste"
+            ACCEPT_EULA: "Y"
+        ports:
+            - "1433:1433"
+        networks:
+            - app-treinaweb
+
+#rede docker
+networks:
+    app-treinaweb:
+        driver: bridge
